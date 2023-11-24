@@ -1,0 +1,4 @@
+node_modules
+.trunk
+.env
+.env.test
