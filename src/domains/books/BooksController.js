@@ -3,23 +3,54 @@ import { Book } from "../../models/book.js"
 class BooksController {
   static async getAll(_req, res) {
     const books = await Book.find();
-    res.json(books);
+    res.status(200).json(books);
   }
 
   static async getById(req, res) {
-    // TODO: Implement code to get a book by its ID from the database
+    const book = await Book.findById(req.params.id);
+    res.status(200).json(book);
   }
 
   static async create(req, res) {
-    // TODO: Implement code to create a new book in the database
+    try {
+      const book = new Book(req.body);
+      await book.save();
+
+      res.status(201).json(book);
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
   }
 
   static async update(req, res) {
-    // TODO: Implement code to update a book in the database
+    try {
+      const book = await Book.findById(req.params.id);
+      if (!book) {
+        return res.status(404).json({ error: 'Book not found' });
+      }
+
+      book.set(req.body);
+      await book.save();
+
+      res.status(200).json(book);
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
   }
 
   static async delete(req, res) {
-    // TODO: Implement code to delete a book from the database
+    try {
+      const book = await Book.findById(req.params.id);
+      if (!book) {
+        return res.status(404).json({ error: 'Book not found' });
+      }
+
+      book.deleteOne();
+
+      res.status(204).json();
+    } catch(err) {
+      res.status(500).json({ error: err.message });
+    }
   }
 }
 
