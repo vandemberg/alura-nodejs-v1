@@ -47,7 +47,7 @@ class BooksController {
 
       book.deleteOne();
 
-      res.status(204).json();
+      res.status(204).json({});
     } catch(err) {
       res.status(500).json({ error: err.message });
     }
