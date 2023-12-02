@@ -1,4 +1,5 @@
-import { Book } from "../../models/book.js"
+import { Author } from "../../models/author.js";
+import { Book } from "../../models/book.js";
 
 class BooksController {
   static async getAll(_req, res) {
@@ -14,6 +15,7 @@ class BooksController {
   static async create(req, res) {
     try {
       const book = new Book(req.body);
+      book.author = await Author.findById(req.body.author);
       await book.save();
 
       res.status(201).json(book);
@@ -26,7 +28,7 @@ class BooksController {
     try {
       const book = await Book.findById(req.params.id);
       if (!book) {
-        return res.status(404).json({ error: 'Book not found' });
+        return res.status(404).json({ error: "Book not found" });
       }
 
       book.set(req.body);
@@ -40,15 +42,10 @@ class BooksController {
 
   static async delete(req, res) {
     try {
-      const book = await Book.findById(req.params.id);
-      if (!book) {
-        return res.status(404).json({ error: 'Book not found' });
-      }
-
-      book.deleteOne();
-
-      res.status(204).json({});
-    } catch(err) {
+      const { id } = req.params;
+      const book = await Book.findByIdAndDelete(id);
+      book ? res.status(204).end() : res.status(404).end();
+    } catch (err) {
       res.status(500).json({ error: err.message });
     }
   }
